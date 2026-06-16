@@ -1,0 +1,369 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 p-0 bg-dark min-vh-100 admin-sidebar">
+            <div class="py-4 text-center border-bottom border-secondary mb-4">
+                <h5 class="text-white fw-bold"><i class="fas fa-user-shield me-2"></i>Admin Panel</h5>
+            </div>
+            <nav class="nav flex-column admin-nav">
+                <a class="nav-link" href="{{ url_for('admin.dashboard') }}"><i class="fas fa-th-large me-2"></i>Dashboard</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_products') }}"><i class="fas fa-pills me-2"></i>Products</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_categories') }}"><i class="fas fa-list me-2"></i>Categories</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_users') }}"><i class="fas fa-users me-2"></i>Users</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_delivery_partners') }}"><i class="fas fa-truck me-2"></i>Delivery Partners</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_orders') }}"><i class="fas fa-shopping-bag me-2"></i>Orders</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_prescriptions') }}"><i class="fas fa-file-medical me-2"></i>Prescriptions</a>
+                <a class="nav-link active" href="{{ url_for('admin.analytics') }}"><i class="fas fa-chart-line me-2"></i>Analytics & Reports</a>
+                <a class="nav-link text-danger mt-5" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 py-5 px-4 bg-light">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <h2 class="fw-bold"><i class="fas fa-analytics me-2 text-primary"></i>Store Analytics</h2>
+                <div class="d-flex gap-3 align-items-center bg-white p-3 rounded-4 shadow-sm">
+                    <div class="d-flex align-items-center gap-2">
+                        <label class="small fw-bold text-muted">From:</label>
+                        <input type="date" id="startDate" class="form-control form-control-sm border-0 bg-light">
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <label class="small fw-bold text-muted">To:</label>
+                        <input type="date" id="endDate" class="form-control form-control-sm border-0 bg-light">
+                    </div>
+                    <button class="btn btn-primary btn-sm rounded-pill px-3" onclick="loadAnalytics()">Apply Filter</button>
+                    <button class="btn btn-outline-success btn-sm rounded-pill px-3" onclick="exportData()"><i class="fas fa-download me-1"></i>Export</button>
+                </div>
+            </div>
+
+            <!-- Metric Cards -->
+            <div class="row g-3 mb-5" id="metricCards">
+                <div class="col-md-3">
+                    <div class="card p-3 border-0 shadow-sm rounded-4 h-100 border-start border-4 border-primary">
+                        <div class="d-flex justify-content-between">
+                            <div><p class="text-muted small mb-1">Total Users</p><h4 class="fw-bold mb-0" id="m-users">-</h4></div>
+                            <i class="fas fa-users text-primary opacity-50 fs-2"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3 border-0 shadow-sm rounded-4 h-100 border-start border-4 border-success">
+                        <div class="d-flex justify-content-between">
+                            <div><p class="text-muted small mb-1">Total Revenue</p><h4 class="fw-bold mb-0 text-success" id="m-revenue">-</h4></div>
+                            <i class="fas fa-wallet text-success opacity-50 fs-2"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3 border-0 shadow-sm rounded-4 h-100 border-start border-4 border-danger">
+                        <div class="d-flex justify-content-between">
+                            <div><p class="text-muted small mb-1">Total Expenses</p><h4 class="fw-bold mb-0 text-danger" id="m-expenses">-</h4></div>
+                            <i class="fas fa-file-invoice-dollar text-danger opacity-50 fs-2"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3 border-0 shadow-sm rounded-4 h-100 border-start border-4 border-info">
+                        <div class="d-flex justify-content-between">
+                            <div><p class="text-muted small mb-1">Net Profit (Range)</p><h4 class="fw-bold mb-0 text-info" id="m-profit">-</h4></div>
+                            <i class="fas fa-chart-pie text-info opacity-50 fs-2"></i>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row 2 of Cards -->
+                <div class="col-md-2">
+                    <div class="card p-3 border-0 shadow-sm rounded-4 h-100">
+                        <p class="text-muted small mb-1">Daily Profit</p>
+                        <h5 class="fw-bold mb-0 text-success" id="m-daily-profit">-</h5>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card p-3 border-0 shadow-sm rounded-4 h-100">
+                        <p class="text-muted small mb-1">Monthly Profit</p>
+                        <h5 class="fw-bold mb-0 text-success" id="m-monthly-profit">-</h5>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card p-3 border-0 shadow-sm rounded-4 h-100">
+                        <p class="text-muted small mb-1">Total Orders</p>
+                        <h5 class="fw-bold mb-0" id="m-orders">-</h5>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card p-3 border-0 shadow-sm rounded-4 h-100">
+                        <p class="text-muted small mb-1">Pending Orders</p>
+                        <h5 class="fw-bold mb-0 text-warning" id="m-pending">-</h5>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card p-3 border-0 shadow-sm rounded-4 h-100">
+                        <p class="text-muted small mb-1">Completed</p>
+                        <h5 class="fw-bold mb-0 text-success" id="m-delivered">-</h5>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card p-3 border-0 shadow-sm rounded-4 h-100">
+                        <p class="text-muted small mb-1">Active Partners</p>
+                        <h5 class="fw-bold mb-0 text-primary" id="m-partners">-</h5>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 1 -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-8">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                        <h6 class="fw-bold mb-4">Revenue vs Expense Trend</h6>
+                        <div id="financialTrendChart"></div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                        <h6 class="fw-bold mb-4">Order Status Distribution</h6>
+                        <div id="statusPieChart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 2 -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                        <h6 class="fw-bold mb-4">Category-wise Sales</h6>
+                        <div id="categorySalesChart"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                        <h6 class="fw-bold mb-4">Top Selling Products</h6>
+                        <div id="topProductsChart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 3 -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                        <h6 class="fw-bold mb-4">Daily Sales Trend (Orders)</h6>
+                        <div id="dailySalesChart"></div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                        <h6 class="fw-bold mb-4">User Growth Tracking</h6>
+                        <div id="userGrowthChart"></div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                        <h6 class="fw-bold mb-4">Prescription Status</h6>
+                        <div class="list-group list-group-flush" id="prescriptionList">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 4: Detailed Sales Table & Inventory -->
+            <div class="row g-4">
+                <div class="col-md-9">
+                    <div class="card border-0 shadow-sm rounded-4 p-4">
+                        <h6 class="fw-bold mb-4">Sales Analytics Detailed View</h6>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="bg-light">
+                                    <tr class="small text-muted text-uppercase fw-bold">
+                                        <th>Order ID</th>
+                                        <th>Product</th>
+                                        <th>Category</th>
+                                        <th>Qty</th>
+                                        <th>Date</th>
+                                        <th>Method</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="salesTableBody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 border-start border-4 border-warning">
+                        <h6 class="fw-bold mb-4 text-warning"><i class="fas fa-exclamation-triangle me-2"></i>Low Stock Alert</h6>
+                        <div class="list-group list-group-flush" id="lowStockList">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ApexCharts Script -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<script>
+    let financialChart, statusChart, categoryChart, productChart, growthChart, salesTrendChart;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - 30);
+        
+        document.getElementById('startDate').value = start.toISOString().split('T')[0];
+        document.getElementById('endDate').value = end.toISOString().split('T')[0];
+        
+        initCharts();
+        loadAnalytics();
+    });
+
+    function initCharts() {
+        financialChart = new ApexCharts(document.querySelector("#financialTrendChart"), {
+            chart: { height: 350, type: 'area', toolbar: { show: false } },
+            stroke: { curve: 'smooth' },
+            colors: ['#28a745', '#dc3545'],
+            series: [],
+            xaxis: { type: 'datetime' }
+        });
+        financialChart.render();
+
+        statusChart = new ApexCharts(document.querySelector("#statusPieChart"), {
+            chart: { height: 350, type: 'donut' },
+            labels: [],
+            series: [],
+            colors: ['#ffc107', '#17a2b8', '#28a745', '#dc3545', '#6c757d']
+        });
+        statusChart.render();
+
+        categoryChart = new ApexCharts(document.querySelector("#categorySalesChart"), {
+            chart: { height: 350, type: 'pie' },
+            labels: [],
+            series: []
+        });
+        categoryChart.render();
+
+        productChart = new ApexCharts(document.querySelector("#topProductsChart"), {
+            chart: { height: 350, type: 'bar' },
+            plotOptions: { bar: { horizontal: true } },
+            series: []
+        });
+        productChart.render();
+
+        salesTrendChart = new ApexCharts(document.querySelector("#dailySalesChart"), {
+            chart: { height: 250, type: 'bar', toolbar: { show: false } },
+            colors: ['#4e73df'],
+            series: [],
+            xaxis: { type: 'datetime' }
+        });
+        salesTrendChart.render();
+
+        growthChart = new ApexCharts(document.querySelector("#userGrowthChart"), {
+            chart: { height: 250, type: 'line' },
+            colors: ['#36b9cc'],
+            series: [],
+            xaxis: { type: 'datetime' }
+        });
+        growthChart.render();
+    }
+
+    async function loadAnalytics() {
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        const response = await fetch(`/admin/api/analytics_data?start_date=${start}&end_date=${end}`);
+        const data = await response.json();
+        
+        updateMetrics(data.summary);
+        financialChart.updateSeries([
+            { name: 'Revenue', data: data.trends.revenue.map(r => ({ x: r.date, y: r.value })) },
+            { name: 'Expense', data: data.trends.expense.map(e => ({ x: e.date, y: e.value })) }
+        ]);
+        statusChart.updateOptions({ labels: data.status_dist.map(d => d.name), series: data.status_dist.map(d => d.value) });
+        categoryChart.updateOptions({ labels: data.categories.map(c => c.name), series: data.categories.map(c => c.value) });
+        productChart.updateSeries([{ name: 'Qty', data: data.top_products.map(p => ({ x: p.name, y: p.value })) }]);
+        salesTrendChart.updateSeries([{ name: 'Orders', data: data.trends.sales.map(s => ({ x: s.date, y: s.value })) }]);
+        growthChart.updateSeries([{ name: 'Users', data: data.trends.user_growth.map(u => ({ x: u.date, y: u.value })) }]);
+        
+        updateSalesTable(data.sales_table);
+        updateLowStock(data.low_stock);
+        updatePrescriptions(data.prescription_stats);
+    }
+
+    function updateMetrics(s) {
+        document.getElementById('m-users').innerText = s.total_users;
+        document.getElementById('m-revenue').innerText = '₹' + s.total_revenue.toLocaleString();
+        document.getElementById('m-expenses').innerText = '₹' + s.total_expenses.toLocaleString();
+        document.getElementById('m-profit').innerText = '₹' + s.total_profit.toLocaleString();
+        document.getElementById('m-orders').innerText = s.total_orders;
+        document.getElementById('m-delivered').innerText = s.delivered_orders;
+        document.getElementById('m-pending').innerText = s.pending_orders;
+        document.getElementById('m-partners').innerText = s.active_partners;
+        document.getElementById('m-daily-profit').innerText = '₹' + s.daily_profit.toLocaleString();
+        document.getElementById('m-monthly-profit').innerText = '₹' + s.monthly_profit.toLocaleString();
+    }
+
+    function updateSalesTable(sales) {
+        const tbody = document.getElementById('salesTableBody');
+        tbody.innerHTML = sales.map(s => `
+            <tr>
+                <td class="fw-bold text-primary">#${s.id}</td>
+                <td>${s.product}</td>
+                <td><span class="badge bg-light text-dark border">${s.category}</span></td>
+                <td>${s.qty}</td>
+                <td class="small text-muted">${s.date}</td>
+                <td class="small">${s.method}</td>
+                <td class="fw-bold">₹${s.amount.toLocaleString()}</td>
+            </tr>
+        `).join('');
+    }
+
+    function updateLowStock(products) {
+        const list = document.getElementById('lowStockList');
+        list.innerHTML = products.length ? products.map(p => `
+            <div class="list-group-item bg-transparent px-0 border-0 d-flex justify-content-between align-items-center">
+                <span class="small">${p.name}</span>
+                <span class="badge bg-warning rounded-pill">${p.stock} left</span>
+            </div>
+        `).join('') : '<p class="text-muted small">All items in stock.</p>';
+    }
+
+    function updatePrescriptions(stats) {
+        const list = document.getElementById('prescriptionList');
+        list.innerHTML = stats.map(s => `
+            <div class="list-group-item bg-transparent px-0 border-0 d-flex justify-content-between align-items-center">
+                <span>${s.status}</span>
+                <span class="badge bg-${s.status === 'Approved' ? 'success' : s.status === 'Pending' ? 'warning' : 'danger'} rounded-pill">${s.count}</span>
+            </div>
+        `).join('');
+    }
+
+    function exportData() {
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        const url = `/admin/export_analytics?start_date=${start}&end_date=${end}`;
+        
+        // Use a temporary anchor to force download and avoid navigation issues
+        const link = document.createElement('a');
+        link.href = url;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => {
+            document.body.removeChild(link);
+        }, 100);
+    }
+</script>
+
+<style>
+    .admin-sidebar { background: #111827 !important; }
+    .admin-nav .nav-link { color: #94a3b8; padding: 15px 25px; border-left: 4px solid transparent; font-weight: 500; transition: all 0.3s; }
+    .admin-nav .nav-link:hover, .admin-nav .nav-link.active { background: rgba(40, 167, 69, 0.1); color: #28a745; border-left-color: #28a745; }
+    .card:hover { transform: translateY(-5px); transition: 0.3s; }
+</style>
+{% endblock %}

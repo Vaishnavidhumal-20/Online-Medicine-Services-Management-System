@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5" data-aos="zoom-in">
+            <div class="glass-card p-5 shadow-lg border-0">
+                <div class="text-center mb-4">
+                    <i class="fas fa-user-plus text-success fs-1 mb-3"></i>
+                    <h2 class="fw-bold">Create Account</h2>
+                    <p class="text-secondary">Join the PharmaPlus community</p>
+                </div>
+                <form method="POST" id="registerForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Username</label>
+                        <input type="text" name="username" class="form-control rounded-pill px-3 py-2"
+                            placeholder="Enter Username" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Email Address</label>
+                        <input type="email" name="email" class="form-control rounded-pill px-3 py-2"
+                            placeholder="Enter Email" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Phone Number</label>
+                        <input type="text" name="phone_number" class="form-control rounded-pill px-3 py-2"
+                            placeholder="Enter Phone Number" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Password</label>
+                        <input type="password" name="password" class="form-control rounded-pill px-3 py-2"
+                            placeholder="Enter Password" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Register as:</label>
+                        <select name="role" id="roleSelector" class="form-select rounded-pill px-3 py-2" onchange="toggleVehicleField()">
+                            <option value="user">User</option>
+                            <option value="delivery_partner">Delivery Partner</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4 d-none" id="vehicleField">
+                        <label class="form-label fw-medium">Vehicle Number</label>
+                        <input type="text" name="vehicle_number" class="form-control rounded-pill px-3 py-2"
+                            placeholder="Enter Vehicle Number (e.g. MH 12 AB 1234)">
+                    </div>
+
+                    <script>
+                        function toggleVehicleField() {
+                            const role = document.getElementById('roleSelector').value;
+                            const field = document.getElementById('vehicleField');
+                            if (role === 'delivery_partner') {
+                                field.classList.remove('d-none');
+                                field.querySelector('input').required = true;
+                            } else {
+                                field.classList.add('d-none');
+                                field.querySelector('input').required = false;
+                            }
+                        }
+                    </script>
+
+                    <button type="submit" class="btn btn-success w-100 rounded-pill py-2 fw-bold shadow-sm">
+                        Create Account
+                    </button>
+                </form>
+
+                <div class="text-center mt-4">
+                    <p class="text-secondary small">Already have an account? <a href="{{ url_for('auth.login') }}"
+                            class="text-success fw-bold text-decoration-none">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

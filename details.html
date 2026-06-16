@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}" class="text-success">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('product_bp.all_medicines') }}"
+                    class="text-success">Medicines</a></li>
+            <li class="breadcrumb-item active">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <div class="col-md-6" data-aos="fade-right">
+            <div class="glass-card p-3 rounded-4 shadow-sm">
+                <!-- Main Image -->
+                <div class="main-image-container text-center mb-3">
+                    <img id="mainImage" src="{{ product.image_url or 'https://via.placeholder.com/500x400?text=Medicine' }}"
+                        class="img-fluid rounded-4 shadow-sm" alt="{{ product.name }}" style="max-height: 400px; object-fit: contain; width: 100%;">
+                </div>
+                
+                <!-- Thumbnails Gallery -->
+                <div class="row g-2 justify-content-center">
+                    <div class="col-auto">
+                        <img src="{{ product.image_url }}" class="thumbnail border rounded-3 border-success active" 
+                             style="width: 70px; height: 70px; object-fit: cover; cursor: pointer;"
+                             onclick="updateMainImage(this.src, this)">
+                    </div>
+                    {% for img in product.additional_images %}
+                    <div class="col-auto">
+                        <img src="{{ img.image_url }}" class="thumbnail border rounded-3 p-1" 
+                             style="width: 70px; height: 70px; object-fit: cover; cursor: pointer;"
+                             onclick="updateMainImage(this.src, this)">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6" data-aos="fade-left">
+            <div class="product-info">
+                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill mb-3">
+                    {{ product.category.name if product.category else 'No Category' }}
+                </span>
+                <h1 class="fw-bold mb-2">{{ product.name }}</h1>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="text-warning me-2">
+                        {% set full_stars = product.rating|int %}
+                        {% set half_star = 1 if (product.rating - full_stars) >= 0.5 else 0 %}
+                        {% for i in range(full_stars) %}<i class="fas fa-star"></i>{% endfor %}
+                        {% if half_star %}<i class="fas fa-star-half-alt"></i>{% endif %}
+                        {% for i in range(5 - full_stars - half_star) %}<i class="far fa-star"></i>{% endfor %}
+                    </div>
+                    <span class="text-secondary small">({{ reviews|length }} Reviews)</span>
+                </div>
+
+                <h2 class="text-success fw-bold mb-4">₹{{ product.price }}</h2>
+
+                <div class="mb-4">
+                    <h6 class="fw-bold">Description</h6>
+                    <p class="text-secondary">{{ product.description or 'No description available for this product.' }}</p>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="fw-bold">Availability:
+                        <span class="{% if product.stock > 0 %}text-success{% else %}text-danger{% endif %}">
+                            {{ 'In Stock' if product.stock > 0 else 'Out of Stock' }} ({{ product.stock }})
+                        </span>
+                    </h6>
+                </div>
+
+                <div class="row g-3 align-items-center mb-5">
+                    <div class="col-auto">
+                        <div class="input-group" style="width: 130px;">
+                            <button class="btn btn-outline-secondary rounded-start-pill" type="button"
+                                onclick="changeQty(-1)">-</button>
+                            <input type="text" id="qty" class="form-control text-center bg-white" value="1" readonly>
+                            <button class="btn btn-outline-secondary rounded-end-pill" type="button"
+                                onclick="changeQty(1)">+</button>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <button id="addToCartBtn" class="btn btn-success btn-lg w-100 rounded-pill fw-bold shadow-sm"
+                            data-product-id="{{ product.id }}">
+                            <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+                <div class="features-list border-top pt-4">
+                    <div class="row g-3">
+                        <div class="col-6"><div class="d-flex align-items-center small text-secondary"><i class="fas fa-truck text-success me-2"></i> Free Delivery</div></div>
+                        <div class="col-6"><div class="d-flex align-items-center small text-secondary"><i class="fas fa-undo text-success me-2"></i> 7 Days Return</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="row mt-5">
+        <div class="col-md-7">
+            <h4 class="fw-bold mb-4">Customer Reviews</h4>
+            {% if reviews %}
+                {% for review in reviews %}
+                <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h6 class="fw-bold mb-0">{{ review.user.username }}</h6>
+                            <div class="text-warning small">
+                                {% for i in range(review.rating) %}<i class="fas fa-star"></i>{% endfor %}
+                                {% for i in range(5 - review.rating) %}<i class="far fa-star"></i>{% endfor %}
+                            </div>
+                        </div>
+                        <small class="text-muted">{{ review.created_at.strftime('%d %b, %Y') }}</small>
+                    </div>
+                    <p class="text-secondary small mb-0">{{ review.comment }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">No reviews yet. Be the first to review!</p>
+            {% endif %}
+        </div>
+        <div class="col-md-5">
+            <div class="bg-white p-4 rounded-4 shadow-sm border border-success border-opacity-10">
+                <h5 class="fw-bold mb-3">Write a Review</h5>
+                {% if current_user.is_authenticated %}
+                <form id="reviewForm">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Your Rating</label>
+                        <div class="rating-input text-warning fs-4">
+                            <i class="far fa-star star-btn" data-val="1"></i>
+                            <i class="far fa-star star-btn" data-val="2"></i>
+                            <i class="far fa-star star-btn" data-val="3"></i>
+                            <i class="far fa-star star-btn" data-val="4"></i>
+                            <i class="far fa-star star-btn" data-val="5"></i>
+                            <input type="hidden" name="rating" id="ratingInput" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Your Comment</label>
+                        <textarea name="comment" class="form-control rounded-4 bg-light border-0" rows="3" placeholder="What did you think of this product?"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 rounded-pill fw-bold">Submit Review</button>
+                </form>
+                {% else %}
+                <div class="text-center py-4">
+                    <p class="text-muted">Please log in to leave a review.</p>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-success btn-sm rounded-pill px-4">Login Now</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateMainImage(src, thumb) {
+        document.getElementById('mainImage').src = src;
+        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active', 'border-success'));
+        thumb.classList.add('active', 'border-success');
+    }
+
+    // Star rating selection
+    document.querySelectorAll('.star-btn').forEach(star => {
+        star.addEventListener('click', function() {
+            let val = this.getAttribute('data-val');
+            document.getElementById('ratingInput').value = val;
+            document.querySelectorAll('.star-btn').forEach(s => {
+                if (s.getAttribute('data-val') <= val) {
+                    s.classList.replace('far', 'fas');
+                } else {
+                    s.classList.replace('fas', 'far');
+                }
+            });
+        });
+    });
+
+    // Review form submission
+    </script>
+    {% if current_user.is_authenticated %}
+    <script>
+    document.getElementById('reviewForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        let formData = new FormData(this);
+        fetch(`/products/submit_review/{{ product.id }}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Thank you for your review!');
+                location.reload();
+            } else {
+                alert(data.message);
+            }
+        });
+    });
+    </script>
+    {% endif %}
+    <script>
+
+    function changeQty(amt) {
+        let input = document.getElementById('qty');
+        let val = parseInt(input.value) + amt;
+        if (val >= 1) input.value = val;
+    }
+
+    function addToCartWithQty(productId) {
+        let qty = document.getElementById('qty').value;
+        fetch(`/products/add_to_cart/${productId}/${qty}`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('cart-count').innerText = data.cart_count;
+                alert('Added to cart!');
+            } else {
+                window.location.href = '/auth/login';
+            }
+        });
+    }
+
+    // Attach event listener for Add to Cart button
+    document.addEventListener('DOMContentLoaded', () => {
+        const cartBtn = document.getElementById('addToCartBtn');
+        if (cartBtn) {
+            cartBtn.addEventListener('click', function() {
+                const pid = this.getAttribute('data-product-id');
+                addToCartWithQty(pid);
+            });
+        }
+    });
+</script>
+
+<style>
+    .thumbnail.active { border-width: 2px !important; }
+    .star-btn { cursor: pointer; transition: transform 0.2s; }
+    .star-btn:hover { transform: scale(1.2); }
+</style>
+{% endblock %}

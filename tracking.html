@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-9">
+            <div class="glass-card p-5 shadow-sm border-0 rounded-4">
+                <div class="d-flex justify-content-between align-items-start mb-5">
+                    <div class="text-start">
+                        <h2 class="fw-bold mb-1">Track Your Order #PH{{ order.id }}</h2>
+                        <p class="text-secondary small">Placed on {{ order.created_at.strftime('%d %b, %Y at %H:%M') }}</p>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge rounded-pill px-3 py-2 fw-bold 
+                            {% if order.status == 'Delivered' %}bg-success 
+                            {% elif order.status == 'Cancelled' %}bg-danger 
+                            {% else %}bg-primary{% endif %}">
+                            {{ order.status }}
+                        </span>
+                        <p class="mt-2 small text-muted mb-0">Delivery Partner: 
+                            <strong>{{ order.delivery_partner.username if order.delivery_partner else 'Assigning...' }}</strong>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- NEW DYNAMIC PROGRESS TRACKER -->
+                <div class="order-progress-container mb-5">
+                    {% set status_map = {
+                        'Order Placed': 1,
+                        'Order Confirmed': 2,
+                        'Packed': 3,
+                        'Out for Delivery': 4,
+                        'Reached Nearby Location': 5,
+                        'Delivered': 6
+                    } %}
+                    {% set current_step = status_map.get(order.status, 1) %}
+                    {% set progress_percent = ((current_step - 1) / 5 * 100) | int %}
+
+                    <div class="progress-track" style="--progress-width: {{ progress_percent }}%;">
+                        <div class="progress-bar-fill"></div>
+                    </div>
+
+                    <div class="progress-steps d-flex justify-content-between">
+                        <div class="p-step active">
+                            <div class="p-icon"><i class="fas fa-shopping-basket"></i></div>
+                            <span class="p-label">Placed</span>
+                        </div>
+                        <div class="p-step {% if current_step >= 2 %}active{% endif %}">
+                            <div class="p-icon"><i class="fas fa-check-double"></i></div>
+                            <span class="p-label">Confirmed</span>
+                        </div>
+                        <div class="p-step {% if current_step >= 3 %}active{% endif %}">
+                            <div class="p-icon"><i class="fas fa-box-open"></i></div>
+                            <span class="p-label">Packed</span>
+                        </div>
+                        <div class="p-step {% if current_step >= 4 %}active{% endif %}">
+                            <div class="p-icon"><i class="fas fa-truck-moving"></i></div>
+                            <span class="p-label">On Way</span>
+                        </div>
+                        <div class="p-step {% if current_step >= 5 %}active{% endif %}">
+                            <div class="p-icon"><i class="fas fa-map-pin"></i></div>
+                            <span class="p-label">Arrived</span>
+                        </div>
+                        <div class="p-step {% if current_step >= 6 %}active{% endif %}">
+                            <div class="p-icon"><i class="fas fa-home"></i></div>
+                            <span class="p-label">Delivered</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Proper Tracking Info -->
+                <div class="row g-4 text-start">
+                    <div class="col-md-6">
+                        <div class="card bg-light border-0 rounded-4 p-4 h-100 shadow-sm border-left-success">
+                            <h6 class="fw-bold mb-4 text-success"><i class="fas fa-map-marker-alt me-2"></i>Live Location Details</h6>
+                            
+                            <div class="tracking-history">
+                                <div class="tracking-item current">
+                                    <div class="dot bg-success"></div>
+                                    <h6 class="fw-bold mb-0">Current Location</h6>
+                                    <p class="text-secondary small mb-2">{{ order.current_location or 'Processing at Warehouse' }}</p>
+                                    <div class="text-muted small">Updated: Just Now</div>
+                                </div>
+                                <hr class="my-3 opacity-25">
+                                <div class="tracking-item">
+                                    <div class="dot bg-secondary"></div>
+                                    <h6 class="fw-bold mb-0">Estimated Delivery Date</h6>
+                                    <p class="text-success fw-bold mb-0 fs-5">{{ order.estimated_delivery_time or 'Today by 9:00 PM' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card bg-light border-0 rounded-4 p-4 h-100 shadow-sm border-left-warning">
+                            <h6 class="fw-bold mb-4 text-warning"><i class="fas fa-shield-alt me-2"></i>Security & Delivery</h6>
+                            
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="bg-white p-3 rounded-circle shadow-sm me-3">
+                                    <i class="fas fa-user-check fs-4 text-primary"></i>
+                                </div>
+                                <div>
+                                    <p class="text-muted small mb-0">Assigned Partner</p>
+                                    <h6 class="fw-bold mb-0">{{ order.delivery_partner.username if order.delivery_partner else 'Partner Pending Assignment' }}</h6>
+                                </div>
+                            </div>
+
+                            {% if order.delivery_otp and order.status != 'Delivered' %}
+                            <div class="bg-white p-3 rounded-4 border">
+                                <p class="small text-muted mb-2">Verification Code (OTP)</p>
+                                <h2 class="fw-bold text-center tracking-widest text-primary mb-0">{{ order.delivery_otp }}</h2>
+                                <p class="small text-center text-muted mt-2 mb-0">Show this code to the partner</p>
+                            </div>
+                            {% elif order.status == 'Delivered' %}
+                            <div class="alert alert-success border-0 text-center mb-0">
+                                <i class="fas fa-check-circle me-1"></i> Order Successfully Delivered
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center gap-3 mt-5">
+                    {% if order.status in ['Pending', 'Confirmed'] %}
+                    <a href="{{ url_for('user.cancel_order', order_id=order.id) }}" class="btn btn-danger rounded-pill px-4" onclick="return confirm('Are you sure you want to cancel this order?')">Cancel Order</a>
+                    {% endif %}
+                    <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-success rounded-pill px-4">Back to Dashboard</a>
+                    <a href="{{ url_for('main.contact') }}" class="btn btn-success rounded-pill px-4">Help Center</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-success { border-left: 5px solid #28a745 !important; }
+    .border-left-warning { border-left: 5px solid #ffc107 !important; }
+    
+    .order-progress-container {
+        position: relative;
+        padding-top: 10px;
+    }
+
+    .progress-track {
+        position: absolute;
+        top: 30px;
+        left: 5%;
+        right: 5%;
+        height: 6px;
+        background: #e9ecef;
+        border-radius: 10px;
+        z-index: 1;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        width: var(--progress-width, 0%);
+        background: linear-gradient(to right, #28a745, #1e7e34);
+        border-radius: 10px;
+        transition: width 1s ease-in-out;
+    }
+
+    .progress-steps {
+        position: relative;
+        z-index: 2;
+    }
+
+    .p-step {
+        width: 80px;
+        text-align: center;
+    }
+
+    .p-icon {
+        width: 45px;
+        height: 45px;
+        background: #fff;
+        border: 4px solid #e9ecef;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+        color: #adb5bd;
+        transition: all 0.4s;
+    }
+
+    .p-step.active .p-icon {
+        background: #28a745;
+        border-color: #d1e7dd;
+        color: #fff;
+        box-shadow: 0 0 15px rgba(40, 167, 69, 0.4);
+    }
+
+    .p-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #adb5bd;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .p-step.active .p-label {
+        color: #28a745;
+    }
+
+    .tracking-widest {
+        letter-spacing: 0.5rem;
+    }
+
+    .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 10px;
+    }
+
+    .animate-pulse {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Sidebar -->
+        <div class="col-md-4 col-lg-3">
+            <div class="glass-card p-4 shadow-sm border-0 text-center mb-4">
+                <div class="avatar-bg mx-auto mb-3 bg-success rounded-circle d-flex align-items-center justify-content-center"
+                    style="width: 80px; height: 80px;">
+                    <i class="fas fa-user text-white fs-1"></i>
+                </div>
+                <h5 class="fw-bold mb-1">{{ current_user.username }}</h5>
+                <p class="text-secondary small">{{ current_user.email }}</p>
+                <hr>
+                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist">
+                    <button class="nav-link active mb-2 rounded-pill" id="v-pills-orders-tab" data-bs-toggle="pill"
+                        data-bs-target="#v-pills-orders" type="button">My Orders</button>
+                    <button class="nav-link mb-2 rounded-pill" id="v-pills-prescriptions-tab" data-bs-toggle="pill"
+                        data-bs-target="#v-pills-prescriptions" type="button">Prescriptions</button>
+                    <button class="nav-link mb-2 rounded-pill" id="v-pills-profile-tab" data-bs-toggle="pill"
+                        data-bs-target="#v-pills-profile" type="button">Profile Settings</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-8 col-lg-9">
+            <div class="tab-content" id="v-pills-tabContent">
+                <!-- Orders Tab -->
+                <div class="tab-pane fade show active" id="v-pills-orders">
+                    <h3 class="fw-bold mb-4">Order History</h3>
+                    {% if orders %}
+                    <div class="table-responsive bg-white rounded-4 shadow-sm">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="border-0 px-4 py-3">Order ID</th>
+                                    <th class="border-0 py-3">Date</th>
+                                    <th class="border-0 py-3">Amount</th>
+                                    <th class="border-0 py-3">Status</th>
+                                    <th class="border-0 py-3">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    <td class="px-4 fw-medium">#PH{{ order.id }}</td>
+                                    <td>{{ order.created_at.strftime('%d %b %Y') }}</td>
+                                    <td class="fw-bold">₹{{ order.total_amount }}</td>
+                                    <td>
+                                        <span
+                                            class="badge rounded-pill {% if order.status == 'Delivered' %}bg-success{% elif order.status == 'Cancelled' %}bg-danger{% else %}bg-info{% endif %} px-3">
+                                            {{ order.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <a href="{{ url_for('user.track_order', order_id=order.id) }}"
+                                                class="btn btn-sm btn-outline-success rounded-pill px-3">Track</a>
+                                            {% if order.status in ['Pending', 'Confirmed'] %}
+                                            <a href="{{ url_for('user.cancel_order', order_id=order.id) }}"
+                                                class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                                onclick="return confirm('Are you sure you want to cancel this order?')">Cancel</a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5 glass-card">
+                        <i class="fas fa-shopping-bag fs-1 text-light mb-3"></i>
+                        <h5 class="text-secondary">You haven't placed any orders yet.</h5>
+                        <a href="{{ url_for('product_bp.all_medicines') }}"
+                            class="btn btn-success rounded-pill mt-3 px-4">Start Shopping</a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Prescriptions Tab -->
+                <div class="tab-pane fade" id="v-pills-prescriptions">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="fw-bold">My Prescriptions</h3>
+                        <button class="btn btn-success rounded-pill" data-bs-toggle="modal"
+                            data-bs-target="#uploadModal">
+                            <i class="fas fa-plus me-2"></i>Upload New
+                        </button>
+                    </div>
+
+                    <div class="row g-4">
+                        {% for p in prescriptions %}
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                                <div class="row g-0">
+                                    <div class="col-4 bg-light d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-file-medical fs-1 text-success"></i>
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="card-body">
+                                            <h6 class="fw-bold mb-1">Upload on {{ p.created_at.strftime('%d %b %Y') }}
+                                            </h6>
+                                            <div class="mb-2">
+                                                <span
+                                                    class="badge {% if p.status == 'Approved' %}bg-success{% elif p.status == 'Rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                                                    {{ p.status }}
+                                                </span>
+                                            </div>
+                                            {% if p.admin_note %}
+                                            <p class="small text-secondary mb-2"><strong>Note:</strong> {{ p.admin_note
+                                                }}</p>
+                                            {% endif %}
+                                            <a href="{{ url_for('static', filename='uploads/' + p.file_path) }}"
+                                                target="_blank"
+                                                class="small text-success fw-bold text-decoration-none">View File</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card border-0">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Upload Prescription</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-3">
+                <form action="{{ url_for('user.upload_prescription') }}" method="POST" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label class="form-label">Select File (JPG, PNG or PDF)</label>
+                        <input type="file" name="prescription" class="form-control rounded-pill px-3" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 rounded-pill py-2 fw-bold">Upload for
+                        Review</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

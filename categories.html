@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 p-0 bg-dark min-vh-100 admin-sidebar">
+            <div class="py-4 text-center border-bottom border-secondary mb-4">
+                <h5 class="text-white fw-bold"><i class="fas fa-user-shield me-2"></i>Admin Panel</h5>
+            </div>
+            <nav class="nav flex-column admin-nav">
+                <a class="nav-link" href="{{ url_for('admin.dashboard') }}"><i
+                        class="fas fa-th-large me-2"></i>Dashboard</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_products') }}"><i
+                        class="fas fa-pills me-2"></i>Products</a>
+                <a class="nav-link active" href="{{ url_for('admin.manage_categories') }}"><i
+                        class="fas fa-list me-2"></i>Categories</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_users') }}"><i
+                        class="fas fa-users me-2"></i>Users</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_delivery_partners') }}"><i
+                        class="fas fa-truck me-2"></i>Delivery Partners</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_orders') }}"><i
+                        class="fas fa-shopping-bag me-2"></i>Orders</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_prescriptions') }}"><i
+                        class="fas fa-file-medical me-2"></i>Prescriptions</a>
+                <a class="nav-link" href="{{ url_for('admin.analytics') }}"><i
+                        class="fas fa-chart-line me-2"></i>Analytics & Reports</a>
+                <a class="nav-link" href="{{ url_for('admin.notifications') }}"><i
+                        class="fas fa-bell me-2"></i>Notifications</a>
+                <a class="nav-link text-danger mt-5" href="{{ url_for('auth.logout') }}"><i
+                        class="fas fa-sign-out-alt me-2"></i>Logout</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 py-5 px-4 bg-light">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <h2 class="fw-bold">Manage Categories</h2>
+                <div class="card p-3 shadow-sm border-0 rounded-4" style="width: 100%; max-width: 800px;">
+                    <form action="{{ url_for('admin.add_category') }}" method="POST">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-3">
+                                <input type="text" name="name" class="form-control rounded-pill border-0 bg-light"
+                                    placeholder="Category name" required>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" name="description"
+                                    class="form-control rounded-pill border-0 bg-light"
+                                    placeholder="Description (optional)">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="image_url" class="form-control rounded-pill border-0 bg-light"
+                                    placeholder="Image URL (optional)">
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <button type="submit" class="btn btn-success rounded-pill px-4 w-100"><i
+                                        class="fas fa-plus me-2"></i>Add</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="categoriesTable">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Products Count</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cat in categories %}
+                            <tr>
+                                <td>#{{ cat.id }}</td>
+                                <td>
+                                    {% if cat.image_url %}
+                                    <img src="{{ cat.image_url }}" alt="{{ cat.name }}" class="rounded shadow-sm"
+                                        style="width: 40px; height: 40px; object-fit: cover;">
+                                    {% else %}
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                        style="width: 40px; height: 40px;">
+                                        <i class="fas fa-image text-muted"></i>
+                                    </div>
+                                    {% endif %}
+                                </td>
+                                <td><span class="fw-bold">{{ cat.name }}</span></td>
+                                <td>{{ cat.description }}</td>
+                                <td>{{ cat.products|length if cat.products else 0 }}</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-primary rounded-circle"
+                                            data-bs-toggle="modal" data-bs-target="#editCategoryModal{{ cat.id }}">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <a href="{{ url_for('admin.delete_category', category_id=cat.id) }}"
+                                            class="btn btn-sm btn-outline-danger rounded-circle"
+                                            onclick="return confirm('Are you sure you want to delete this category?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+
+                                    <!-- Edit Category Modal -->
+                                    <div class="modal fade" id="editCategoryModal{{ cat.id }}" tabindex="-1">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content rounded-4 border-0 shadow-lg">
+                                                <div class="modal-header border-0 pb-0">
+                                                    <h5 class="fw-bold">Edit Category</h5>
+                                                    <button type="button" class="btn-close"
+                                                        data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body p-4">
+                                                    <form
+                                                        action="{{ url_for('admin.edit_category', category_id=cat.id) }}"
+                                                        method="POST">
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-bold">Name</label>
+                                                            <input type="text" name="name"
+                                                                class="form-control bg-light border-0"
+                                                                value="{{ cat.name }}" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-bold">Description</label>
+                                                            <textarea name="description"
+                                                                class="form-control bg-light border-0"
+                                                                rows="3">{{ cat.description }}</textarea>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-bold">Image URL</label>
+                                                            <input type="text" name="image_url"
+                                                                class="form-control bg-light border-0"
+                                                                value="{{ cat.image_url or '' }}">
+                                                        </div>
+                                                        <button type="submit"
+                                                            class="btn btn-success w-100 rounded-pill py-2 fw-bold shadow">Update
+                                                            Category</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#categoriesTable').DataTable({
+            "pageLength": 10
+        });
+    });
+</script>
+
+<style>
+    .admin-sidebar {
+        background: #111827 !important;
+    }
+
+    .admin-nav .nav-link {
+        color: #94a3b8;
+        padding: 15px 25px;
+        border-left: 4px solid transparent;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .admin-nav .nav-link:hover,
+    .admin-nav .nav-link.active {
+        background: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+        border-left-color: #28a745;
+    }
+</style>
+{% endblock %}

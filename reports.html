@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 p-0 bg-dark min-vh-100 admin-sidebar">
+            <div class="py-4 text-center border-bottom border-secondary mb-4">
+                <h5 class="text-white fw-bold"><i class="fas fa-user-shield me-2"></i>Admin Panel</h5>
+            </div>
+            <nav class="nav flex-column admin-nav">
+                <a class="nav-link" href="{{ url_for('admin.dashboard') }}"><i
+                        class="fas fa-th-large me-2"></i>Dashboard</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_products') }}"><i
+                        class="fas fa-pills me-2"></i>Products</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_categories') }}"><i
+                        class="fas fa-list me-2"></i>Categories</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_users') }}"><i
+                        class="fas fa-users me-2"></i>Users</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_delivery_partners') }}"><i
+                        class="fas fa-truck me-2"></i>Delivery Partners</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_orders') }}"><i
+                        class="fas fa-shopping-bag me-2"></i>Orders</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_prescriptions') }}"><i
+                        class="fas fa-file-medical me-2"></i>Prescriptions</a>
+                <a class="nav-link active" href="{{ url_for('admin.analytics') }}"><i
+                        class="fas fa-chart-line me-2"></i>Analytics & Reports</a>
+                <a class="nav-link" href="{{ url_for('admin.notifications') }}"><i
+                        class="fas fa-bell me-2"></i>Notifications</a>
+                <a class="nav-link text-danger mt-5" href="{{ url_for('auth.logout') }}"><i
+                        class="fas fa-sign-out-alt me-2"></i>Logout</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 py-5 px-4 bg-light">
+            <h2 class="fw-bold mb-5">Sales Reports</h2>
+
+            <div class="row g-4 mb-5">
+                <div class="col-md-6">
+                    <div class="card p-4 shadow-sm border-0 rounded-4 h-100">
+                        <h5 class="fw-bold mb-4">Revenue Overview</h5>
+                        <div class="text-center py-5 bg-light rounded-4">
+                            <h1 class="text-success fw-bold">₹{{ total_sales }}</h1>
+                            <p class="text-secondary">Lifetime Total Sales</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-4 shadow-sm border-0 rounded-4 h-100">
+                        <h5 class="fw-bold mb-4">Sales Analytics (Placeholder)</h5>
+                        <div class="text-center py-5">
+                            <i class="fas fa-chart-bar fs-1 text-light mb-3"></i>
+                            <p class="text-muted">Graph visualization integration pending...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0">Daily Growth (Last 7 Days)</h5>
+                    <span class="badge bg-success-light text-success rounded-pill px-3">Live Data</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0 px-3">Date</th>
+                                <th class="border-0">Orders</th>
+                                <th class="border-0">Revenue</th>
+                                <th class="border-0">Daily Growth</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in reports_data %}
+                            <tr>
+                                <td class="px-3 fw-medium">{{ row.date }}</td>
+                                <td>{{ row.orders }}</td>
+                                <td class="fw-bold">₹{{ row.revenue }}</td>
+                                <td>
+                                    {% if row.growth > 0 %}
+                                    <span class="text-success"><i class="fas fa-arrow-up me-1"></i>+{{ row.growth
+                                        }}%</span>
+                                    {% elif row.growth < 0 %} <span class="text-danger"><i
+                                            class="fas fa-arrow-down me-1"></i>{{ row.growth }}%</span>
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% if not reports_data %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">No sales data available yet for the
+                                    last 7 days</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <h5 class="fw-bold mb-4">Monthly Growth (Overview)</h5>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Month</th>
+                                <th>Orders</th>
+                                <th>Revenue</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>March 2026</td>
+                                <td>{{ total_orders }}</td>
+                                <td>₹{{ total_sales }}</td>
+                                <td><span class="badge bg-success px-3 rounded-pill">+12%</span></td>
+                            </tr>
+                            <tr class="text-muted">
+                                <td>February 2026</td>
+                                <td>8</td>
+                                <td>₹3,200</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-sidebar {
+        background: #111827 !important;
+    }
+
+    .admin-nav .nav-link {
+        color: #94a3b8;
+        padding: 15px 25px;
+        border-left: 4px solid transparent;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .admin-nav .nav-link:hover,
+    .admin-nav .nav-link.active {
+        background: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+        border-left-color: #28a745;
+    }
+</style>
+{% endblock %}

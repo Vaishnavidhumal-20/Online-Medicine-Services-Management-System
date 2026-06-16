@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 p-0 bg-dark min-vh-100 admin-sidebar">
+            <div class="py-4 text-center border-bottom border-secondary mb-4">
+                <h5 class="text-white fw-bold"><i class="fas fa-truck-loading me-2"></i>Partner Panel</h5>
+                <p class="text-white-50 small mb-0">{{ current_user.username }}</p>
+            </div>
+            <nav class="nav flex-column admin-nav">
+                <a class="nav-link" href="{{ url_for('delivery.dashboard') }}"><i class="fas fa-th-large me-2"></i>Dashboard</a>
+                <a class="nav-link active" href="{{ url_for('delivery.assigned_orders') }}"><i class="fas fa-clipboard-list me-2"></i>Assigned Orders</a>
+                <a class="nav-link" href="{{ url_for('delivery.notifications') }}"><i class="fas fa-bell me-2"></i>Notifications</a>
+                <a class="nav-link text-danger mt-5" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 py-5 px-4 bg-light">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <h2 class="fw-bold">My Assigned Orders</h2>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="assignedOrdersTable">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer Name</th>
+                                <th>Customer Phone</th>
+                                <th>Total Amount</th>
+                                <th>Status</th>
+                                <th>Assigned Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td>#{{ order.id }}</td>
+                                <td>{{ order.user.username }}</td>
+                                <td>{{ order.user.phone_number }}</td>
+                                <td>₹{{ order.total_amount }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if order.status == 'Delivered' else 'warning' if order.status != 'Cancelled' else 'danger' }} px-3 rounded-pill">
+                                        {{ order.status }}
+                                    </span>
+                                </td>
+                                <td>{{ order.created_at.strftime('%d %b %Y, %I:%M %p') }}</td>
+                                <td>
+                                    <a href="{{ url_for('delivery.order_details', order_id=order.id) }}" class="btn btn-sm btn-primary rounded-pill px-3">
+                                        Manage Delivery
+                                    </a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <i class="fas fa-box-open fs-1 display-1 mb-3"></i>
+                                        <p>No orders have been assigned to you yet.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-sidebar { background: #111827 !important; }
+    .admin-nav .nav-link {
+        color: #94a3b8; padding: 15px 25px; border-left: 4px solid transparent; font-weight: 500; transition: all 0.3s;
+    }
+    .admin-nav .nav-link:hover, .admin-nav .nav-link.active {
+        background: rgba(40, 167, 69, 0.1); color: #28a745; border-left-color: #28a745;
+    }
+</style>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#assignedOrdersTable').DataTable({
+            "pageLength": 10,
+            "order": [[0, "desc"]]
+        });
+    });
+</script>
+{% endblock %}

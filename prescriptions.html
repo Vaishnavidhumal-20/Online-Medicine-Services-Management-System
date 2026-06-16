@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 p-0 bg-dark min-vh-100 admin-sidebar">
+            <div class="py-4 text-center border-bottom border-secondary mb-4">
+                <h5 class="text-white fw-bold"><i class="fas fa-user-shield me-2"></i>Admin Panel</h5>
+            </div>
+            <nav class="nav flex-column admin-nav">
+                <a class="nav-link" href="{{ url_for('admin.dashboard') }}"><i
+                        class="fas fa-th-large me-2"></i>Dashboard</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_products') }}"><i
+                        class="fas fa-pills me-2"></i>Products</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_categories') }}"><i
+                        class="fas fa-list me-2"></i>Categories</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_users') }}"><i
+                        class="fas fa-users me-2"></i>Users</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_delivery_partners') }}"><i
+                        class="fas fa-truck me-2"></i>Delivery Partners</a>
+                <a class="nav-link" href="{{ url_for('admin.manage_orders') }}"><i
+                        class="fas fa-shopping-bag me-2"></i>Orders</a>
+                <a class="nav-link active" href="{{ url_for('admin.manage_prescriptions') }}"><i
+                        class="fas fa-file-medical me-2"></i>Prescriptions</a>
+                <a class="nav-link" href="{{ url_for('admin.analytics') }}"><i
+                        class="fas fa-chart-line me-2"></i>Analytics & Reports</a>
+                <a class="nav-link" href="{{ url_for('admin.notifications') }}"><i
+                        class="fas fa-bell me-2"></i>Notifications</a>
+                <a class="nav-link text-danger mt-5" href="{{ url_for('auth.logout') }}"><i
+                        class="fas fa-sign-out-alt me-2"></i>Logout</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 py-5 px-4 bg-light">
+            <h2 class="fw-bold mb-5">Prescription Reviews</h2>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="prescriptionsTable">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>File Name</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for script in prescriptions %}
+                            <tr>
+                                <td>#{{ script.id }}</td>
+                                <td>{{ script.user.username }}</td>
+                                <td><a href="{{ url_for('static', filename='uploads/' + script.file_path) }}"
+                                        target="_blank" class="text-success"><i class="fas fa-image me-1"></i>{{
+                                        script.file_path }}</a></td>
+                                <td>
+                                    <span
+                                        class="badge bg-{{ 'success' if script.status == 'Approved' else 'danger' if script.status == 'Rejected' else 'warning' }} px-3 rounded-pill">
+                                        {{ script.status }}
+                                    </span>
+                                </td>
+                                <td>{{ script.created_at.strftime('%d %b, %Y') }}</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ url_for('admin.review_prescription', prescription_id=script.id, action='Approved') }}"
+                                            class="btn btn-sm btn-success rounded-pill px-3">Approve</a>
+                                        <a href="{{ url_for('admin.review_prescription', prescription_id=script.id, action='Rejected') }}"
+                                            class="btn btn-sm btn-danger rounded-pill px-3">Reject</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#prescriptionsTable').DataTable({
+            "pageLength": 10,
+            "order": [[0, "desc"]]
+        });
+    });
+</script>
+
+<style>
+    .admin-sidebar {
+        background: #111827 !important;
+    }
+
+    .admin-nav .nav-link {
+        color: #94a3b8;
+        padding: 15px 25px;
+        border-left: 4px solid transparent;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .admin-nav .nav-link:hover,
+    .admin-nav .nav-link.active {
+        background: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+        border-left-color: #28a745;
+    }
+</style>
+{% endblock %}

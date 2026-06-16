@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 p-0 bg-dark min-vh-100 admin-sidebar">
+            <div class="py-4 text-center border-bottom border-secondary mb-4">
+                <h5 class="text-white fw-bold"><i class="fas fa-truck-loading me-2"></i>Partner Panel</h5>
+                <p class="text-white-50 small mb-0">{{ current_user.username }}</p>
+            </div>
+            <nav class="nav flex-column admin-nav">
+                <a class="nav-link" href="{{ url_for('delivery.dashboard') }}"><i class="fas fa-th-large me-2"></i>Dashboard</a>
+                <a class="nav-link" href="{{ url_for('delivery.assigned_orders') }}"><i class="fas fa-clipboard-list me-2"></i>Assigned Orders</a>
+                <a class="nav-link active" href="{{ url_for('delivery.notifications') }}"><i class="fas fa-bell me-2"></i>Notifications</a>
+                <a class="nav-link text-danger mt-5" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 py-5 px-4 bg-light">
+            <h2 class="fw-bold mb-5">Notifications</h2>
+
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card border-0 shadow-sm rounded-4 p-4">
+                        <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+                            <i class="fas fa-info-circle text-primary fs-4 me-3"></i>
+                            <div>
+                                <h6 class="fw-bold mb-0">System Notification</h6>
+                                <p class="small text-muted mb-0">Today, 10:30 AM</p>
+                                <p class="mb-0 mt-2">Welcome to the PharmaPlus Delivery Team! You will receive new order alerts here.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center py-5">
+                            <i class="fas fa-bell-slash fs-1 text-muted mb-3 opacity-25"></i>
+                            <p class="text-muted">No new alerts at this time.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-sidebar { background: #111827 !important; }
+    .admin-nav .nav-link {
+        color: #94a3b8; padding: 15px 25px; border-left: 4px solid transparent; font-weight: 500; transition: all 0.3s;
+    }
+    .admin-nav .nav-link:hover, .admin-nav .nav-link.active {
+        background: rgba(40, 167, 69, 0.1); color: #28a745; border-left-color: #28a745;
+    }
+</style>
+{% endblock %}

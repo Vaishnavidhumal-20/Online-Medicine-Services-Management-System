@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden" data-aos="fade-up">
+                <div class="card-header bg-success text-white py-4 text-center">
+                    <h1 class="fw-bold mb-0">Return & Refund Policy</h1>
+                    <p class="mb-0 opacity-75">Your trust is our priority</p>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <section class="mb-5">
+                        <h3 class="text-success fw-bold mb-3"><i class="fas fa-undo-alt me-2"></i>Return Policy</h3>
+                        <p class="text-muted">At PharmaPlus, we strive to ensure that you have a hassle-free experience.
+                            If you are not satisfied with your purchase, you can return the products within <strong>7
+                                days</strong> of delivery, provided they meet the following criteria:</p>
+                        <ul class="list-group list-group-flush mb-3">
+                            <li class="list-group-item bg-transparent border-0 ps-0"><i
+                                    class="fas fa-check-circle text-success me-2"></i>Medicines must be in their
+                                original packaging, unopened and unused.</li>
+                            <li class="list-group-item bg-transparent border-0 ps-0"><i
+                                    class="fas fa-check-circle text-success me-2"></i>Healthcare products must have the
+                                seal intact.</li>
+                            <li class="list-group-item bg-transparent border-0 ps-0"><i
+                                    class="fas fa-check-circle text-success me-2"></i>Items must be returned with the
+                                original invoice.</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-5">
+                        <h3 class="text-success fw-bold mb-3"><i class="fas fa-times-circle me-2"></i>Non-Returnable
+                            Items</h3>
+                        <p class="text-muted">Due to safety and hygiene reasons, the following items cannot be returned:
+                        </p>
+                        <ul class="list-group list-group-flush mb-3">
+                            <li class="list-group-item bg-transparent border-0 ps-0"><i
+                                    class="fas fa-exclamation-triangle text-warning me-2"></i>Temperature-sensitive
+                                medicines (refrigerated items).</li>
+                            <li class="list-group-item bg-transparent border-0 ps-0"><i
+                                    class="fas fa-exclamation-triangle text-warning me-2"></i>Personal care products if
+                                the seal is broken.</li>
+                            <li class="list-group-item bg-transparent border-0 ps-0"><i
+                                    class="fas fa-exclamation-triangle text-warning me-2"></i>Baby care products
+                                (Diapers, etc.).</li>
+                            <li class="list-group-item bg-transparent border-0 ps-0"><i
+                                    class="fas fa-exclamation-triangle text-warning me-2"></i>Wellness products once
+                                opened.</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-5">
+                        <h3 class="text-success fw-bold mb-3"><i class="fas fa-hand-holding-usd me-2"></i>Refund Process
+                        </h3>
+                        <p class="text-muted">Once we receive and inspect your return, we will process your refund:</p>
+                        <div class="row g-4 mt-2">
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded-3 bg-light">
+                                    <h6 class="fw-bold">Online Payments</h6>
+                                    <p class="small mb-0">Refund will be credited to the original payment mode within
+                                        5-7 business days.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded-3 bg-light">
+                                    <h6 class="fw-bold">Cash on Delivery</h6>
+                                    <p class="small mb-0">Refund will be processed via bank transfer or store credit as
+                                        per your preference.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <h3 class="text-success fw-bold mb-3"><i class="fas fa-headset me-2"></i>How to Initiate a
+                            Return?</h3>
+                        <p class="text-muted">To initiate a return, follow these simple steps:</p>
+                        <ol class="ps-3 text-muted">
+                            <li class="mb-2">Go to "My Orders" in your dashboard.</li>
+                            <li class="mb-2">Select the order and items you wish to return.</li>
+                            <li class="mb-2">Upload a clear photo of the item showing the reason for return.</li>
+                            <li class="mb-2">Our team will review the request and arrange a pickup.</li>
+                        </ol>
+                        <div class="alert alert-info border-0 rounded-4 mt-4">
+                            <i class="fas fa-info-circle me-2"></i> For any further assistance, please contact our
+                            support at <strong>support@pharmaplus.com</strong> or call us at <strong>+91 98765
+                                43210</strong>.
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card-header {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+    }
+
+    h3 {
+        display: flex;
+        align-items: center;
+    }
+</style>
+{% endblock %}

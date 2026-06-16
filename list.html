@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3 mb-4">
+            <div class="glass-card p-4 shadow-sm border-0 sticky-top" style="top: 100px;">
+                <h5 class="fw-bold mb-4">Categories</h5>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('product_bp.all_medicines') }}"
+                        class="list-group-item list-group-item-action border-0 rounded-pill mb-1 {{ 'active bg-success' if not current_category }}">
+                        All Medicines
+                    </a>
+                    {% for category in categories %}
+                    <a href="{{ url_for('product_bp.category_products', category_id=category.id) }}"
+                        class="list-group-item list-group-item-action border-0 rounded-pill mb-1 {{ 'active bg-success' if current_category and current_category.id == category.id }}">
+                        {{ category.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-5">
+                    <h5 class="fw-bold mb-3">Price Range</h5>
+                    <input type="range" class="form-range" min="0" max="5000" id="priceRange">
+                    <div class="d-flex justify-content-between">
+                        <small>₹0</small>
+                        <small>₹5000</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold">
+                    {% if search_query %}
+                    Search Results for "{{ search_query }}"
+                    {% elif current_category %}
+                    {{ current_category.name }}
+                    {% else %}
+                    All Medicines
+                    {% endif %}
+                </h3>
+                <span class="text-secondary">{{ products|length }} items found</span>
+            </div>
+
+            <div class="row g-4">
+                {% if products %}
+                {% for product in products %}
+                <div class="col-md-6 col-lg-4" data-aos="fade-up">
+                    <div class="card product-card h-100 shadow-sm border-0">
+                        <img src="{{ product.image_url or 'https://via.placeholder.com/300x200?text=Medicine' }}"
+                            class="card-img-top product-image" alt="{{ product.name }}">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold mb-1">{{ product.name }}</h5>
+                            <p class="text-secondary small mb-3">{{ product.description[:80] }}...</p>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h5 class="text-success fw-bold mb-0">₹{{ product.price }}</h5>
+                                <div class="text-warning small">
+                                    {% set full_stars = product.rating|int %}
+                                    {% set half_star = 1 if (product.rating - full_stars) >= 0.5 else 0 %}
+                                    {% for i in range(full_stars) %}<i class="fas fa-star"></i>{% endfor %}
+                                    {% if half_star %}<i class="fas fa-star-half-alt"></i>{% endif %}
+                                    {% for i in range(5 - full_stars - half_star) %}<i class="far fa-star"></i>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <span class="badge bg-light text-muted border">{{ product.stock }} in stock</span>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <a href="{{ url_for('product_bp.product_details', product_id=product.id) }}"
+                                    class="btn btn-outline-success rounded-pill btn-sm">View Details</a>
+                                <button class="btn btn-success rounded-pill btn-sm fw-bold add-to-cart-btn"
+                                    data-product-id="{{ product.id }}">
+                                    <i class="fas fa-cart-plus me-1"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-search fs-1 text-light mb-3"></i>
+                    <h4 class="text-secondary">No products found in this category.</h4>
+                    <a href="{{ url_for('main.index') }}" class="btn btn-success rounded-pill mt-3 px-4">Go Home</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Handle Add to Cart via Data Attributes
+    document.addEventListener('DOMContentLoaded', function () {
+        document.body.addEventListener('click', function (e) {
+            const btn = e.target.closest('.add-to-cart-btn');
+            if (btn) {
+                const productId = btn.getAttribute('data-product-id');
+                addToCart(productId);
+            }
+        });
+    });
+
+    function addToCart(productId) {
+        fetch(`/products/add_to_cart/${productId}/1`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const countEl = document.getElementById('cart-count');
+                    if (countEl) countEl.innerText = data.cart_count;
+                    alert('Added to cart!');
+                } else {
+                    alert(data.message);
+                    window.location.href = "{{ url_for('auth.login') }}";
+                }
+            })
+            .catch(err => console.error('Error:', err));
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,438 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- 1. HERO SLIDER: Premium 6-Slide Carousel -->
+<div id="pharmaHero" class="carousel slide hero-slider carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#pharmaHero" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#pharmaHero" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#pharmaHero" data-bs-slide-to="2"></button>
+        <button type="button" data-bs-target="#pharmaHero" data-bs-slide-to="3"></button>
+        <button type="button" data-bs-target="#pharmaHero" data-bs-slide-to="4"></button>
+        <button type="button" data-bs-target="#pharmaHero" data-bs-slide-to="5"></button>
+    </div>
+    <div class="carousel-inner">
+        <!-- Slide 1 -->
+        <div class="carousel-item active"
+            style="background-image: url('https://images.unsplash.com/photo-1587854692152-cbe660dbbb88?auto=format&fit=crop&q=80&w=1500');">
+            <div class="hero-overlay"></div>
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-lg-7 text-white" data-aos="fade-up">
+                        <h6 class="text-success fw-bold text-uppercase ls-2">PharmaPlus Premium</h6>
+                        <h1 class="display-2 fw-bold mb-3">Your Health, Our <span class="text-success">Priority</span>
+                        </h1>
+                        <p class="fs-4 mb-4">Get genuine medicines delivered to your doorstep within 24 hours.</p>
+                        <a href="{{ url_for('product_bp.all_medicines') }}"
+                            class="btn btn-success btn-lg rounded-pill px-5 shadow-lg">Shop Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Slide 2 -->
+        <div class="carousel-item"
+            style="background-image: url('https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&q=80&w=1500');">
+            <div class="hero-overlay"></div>
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-lg-7 text-white">
+                        <h6 class="text-warning fw-bold text-uppercase ls-2">Special Offer</h6>
+                        <h1 class="display-2 fw-bold mb-3">Flat 20% Off!</h1>
+                        <p class="fs-4 mb-4">On your first order of healthcare essentials. Use code: <b>FIRST20</b></p>
+                        <a href="{{ url_for('product_bp.all_medicines') }}"
+                            class="btn btn-success btn-lg rounded-pill px-5 shadow-lg">View Offers</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Slide 3 -->
+        <div class="carousel-item"
+            style="background-image: url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=1500');">
+            <div class="hero-overlay"></div>
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-lg-7 text-white">
+                        <h6 class="text-info fw-bold text-uppercase ls-2">Immunity Boosters</h6>
+                        <h1 class="display-2 fw-bold mb-3">Stay Strong</h1>
+                        <p class="fs-4 mb-4">Special discounts on multivitamins and supplements this season.</p>
+                        <a href="#" class="btn btn-success btn-lg rounded-pill px-5 shadow-lg">Shop Boosters</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Slide 4 -->
+        <div class="carousel-item"
+            style="background-image: url('https://images.unsplash.com/photo-1550573104-4eb62f8ad71b?auto=format&fit=crop&q=80&w=1500');">
+            <div class="hero-overlay"></div>
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-lg-7 text-white">
+                        <h6 class="text-danger fw-bold text-uppercase ls-2">Instant Upload</h6>
+                        <h1 class="display-2 fw-bold mb-3">Prescription Upload</h1>
+                        <p class="fs-4 mb-4">Just upload your doctor's note and we'll handle the rest.</p>
+                        <a href="#upload-section" class="btn btn-success btn-lg rounded-pill px-5 shadow-lg">Upload
+                            Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Slide 5 -->
+        <div class="carousel-item"
+            style="background-image: url('https://images.unsplash.com/photo-1584362917165-526a968579e8?auto=format&fit=crop&q=80&w=1500');">
+            <div class="hero-overlay"></div>
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-lg-7 text-white">
+                        <h6 class="text-primary fw-bold text-uppercase ls-2">Skincare Range</h6>
+                        <h1 class="display-2 fw-bold mb-3">Glowing Health</h1>
+                        <p class="fs-4 mb-4">Dermatologically tested skincare products now at your disposal.</p>
+                        <a href="#" class="btn btn-success btn-lg rounded-pill px-5 shadow-lg">View Skincare</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Slide 6 -->
+        <div class="carousel-item"
+            style="background-image: url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1500');">
+            <div class="hero-overlay"></div>
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-lg-7 text-white">
+                        <h6 class="text-success fw-bold text-uppercase ls-2">Elderly Care</h6>
+                        <h1 class="display-2 fw-bold mb-3">Compassionate Care</h1>
+                        <p class="fs-4 mb-4">Specialized mobility and elderly care products for your loved ones.</p>
+                        <a href="#" class="btn btn-success btn-lg rounded-pill px-5 shadow-lg">Shop Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#pharmaHero" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#pharmaHero" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
+</div>
+
+<!-- 2. UPLOAD PRESCRIPTION: File upload container -->
+<div class="container position-relative" style="margin-top: -60px; z-index: 5;" id="upload-section">
+    <div class="upload-container bg-white p-5 rounded-4 shadow-lg" data-aos="zoom-in">
+        <div class="row align-items-center text-center text-lg-start">
+            <div class="col-lg-7">
+                <h2 class="fw-bold text-success mb-3"><i class="fas fa-file-medical me-2"></i>Upload Your Prescription
+                </h2>
+                <p class="text-muted fs-5">Can't find your medicine? Just upload your prescription and our pharmacists
+                    will help you!</p>
+            </div>
+            <div class="col-lg-5">
+                <form action="{{ url_for('user.upload_prescription') }}" method="POST" enctype="multipart/form-data"
+                    class="d-flex gap-2">
+                    <input type="file" name="prescription" class="form-control rounded-pill p-3 border-dashed" required>
+                    <button type="submit" class="btn btn-success rounded-pill px-4 shadow">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. SERVICES SECTION -->
+
+
+<!-- 4. CATEGORIES SECTION -->
+<div class="container-fluid py-5 bg-light-green">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h6 class="text-success fw-bold text-uppercase">Browse Shop</h6>
+                <h2 class="fw-bold">Shop by Categories</h2>
+            </div>
+            <a href="{{ url_for('product_bp.all_medicines') }}" class="btn btn-outline-success rounded-pill px-4">See
+                All</a>
+        </div>
+        <div class="row g-4">
+            {% for cat in categories %}
+            <div class="col-6 col-lg-2-4">
+                <div class="category-card-new overflow-hidden rounded-4 shadow-sm bg-white position-relative"
+                    data-aos="fade-up">
+                    <img src="{{ cat.image_url if cat.image_url else 'https://images.unsplash.com/photo-1587370560942-ad2a04eabb6d?auto=format&fit=crop&q=80&w=400' }}"
+                        class="w-100" style="height: 180px; object-fit: cover;" alt="{{ cat.name }}">
+                    <div class="category-info p-3 text-center">
+                        <i class="fas fa-pills text-success mb-2 fs-4"></i>
+                        <h6 class="fw-bold mb-0">{{ cat.name }}</h6>
+                    </div>
+                    <a href="{{ url_for('product_bp.category_products', category_id=cat.id) }}"
+                        class="stretched-link"></a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- 5. PRODUCTS SECTION -->
+<div class="container py-6">
+    <div class="text-center mb-5">
+        <h6 class="text-success fw-bold text-uppercase">Top Products</h6>
+        <h2 class="fw-bold">Our Best Sellers</h2>
+    </div>
+    <div class="row g-4">
+        {% for product in products %}
+        <div class="col-md-3" data-aos="fade-up">
+            <div
+                class="card product-card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative transition">
+                <div class="product-img-wrapper p-4 bg-light text-center">
+                    <img src="{{ product.image_url or 'https://via.placeholder.com/200x200?text=Medicine' }}"
+                        class="img-fluid" style="height: 200px; object-fit: contain;" alt="{{ product.name }}">
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <small class="bg-success-light text-success px-2 py-1 rounded small fw-bold">{{
+                            product.category.name if product.category else 'Medicine' }}</small>
+                        <div class="text-warning small">
+                            <i class="fas fa-star"></i> {{ product.rating }}
+                        </div>
+                    </div>
+                    <h5 class="fw-bold mb-3">{{ product.name }}</h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h4 fw-bold text-success mb-0">₹{{ product.price }}</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 p-3 pt-0 d-flex gap-2">
+                    <a href="{{ url_for('product_bp.product_details', product_id=product.id) }}"
+                        class="btn btn-outline-success flex-grow-1 rounded-pill fw-bold">View Details</a>
+                    <button class="btn btn-success rounded-circle shadow add-to-cart-btn"
+                        data-product-id="{{ product.id }}">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- 6. ABOUT US SECTION -->
+<div class="bg-dark text-white py-6 overflow-hidden position-relative">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6" data-aos="fade-right">
+                <h6 class="text-success fw-bold text-uppercase">Discover PharmaPlus</h6>
+                <h2 class="display-4 fw-bold mb-4">Crafting a Healthier <span class="text-success">Tomorrow</span></h2>
+                <p class="fs-5 text-secondary opacity-75 mb-4">Founded in 2024, PharmaPlus is dedicated to making
+                    healthcare accessible, affordable, and easy for everyone. We leverage technology to bring pharmacy
+                    services to your fingertips.</p>
+                <div class="row g-4">
+                    <div class="col-6">
+                        <h2 class="fw-bold text-success mb-0">10k+</h2>
+                        <small class="text-secondary">Happy Customers</small>
+                    </div>
+                    <div class="col-6">
+                        <h2 class="fw-bold text-success mb-0">500+</h2>
+                        <small class="text-secondary">Partner Labs</small>
+                    </div>
+                </div>
+                <a href="{{ url_for('main.about') }}" class="btn btn-success mt-5 rounded-pill px-5 shadow">Learn
+                    More</a>
+            </div>
+            <div class="col-lg-6 mt-5 mt-lg-0" data-aos="fade-left">
+                <div class="position-relative">
+                    <img src="https://images.unsplash.com/photo-1587370560942-ad2a04eabb6d?auto=format&fit=crop&q=80&w=800"
+                        class="img-fluid rounded-4 shadow-lg scale-hover" alt="About Us">
+                    <div
+                        class="experience-card bg-success p-4 rounded-4 shadow position-absolute bottom-0 start-0 m-4 floating">
+                        <h4 class="fw-bold mb-0">10+ Years</h4>
+                        <small class="opacity-75">Service Excellence</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 7. CONTACT SECTION WITH GOOGLE MAP -->
+<div class="container py-6">
+    <div class="row g-5">
+        <div class="col-lg-5" data-aos="fade-up">
+            <h2 class="fw-bold mb-4">Get In Touch</h2>
+            <p class="text-muted mb-5">Have any questions or need medical help? Contact our experts today.</p>
+            <div class="contact-info-list">
+                <div class="d-flex mb-4">
+                    <div class="icon-sm bg-success-light text-success rounded-circle me-3"><i
+                            class="fas fa-phone-alt"></i></div>
+                    <div>
+                        <h6 class="fw-bold mb-0">Phone</h6>
+                        <p class="text-muted mb-0">+91 98765 43210</p>
+                    </div>
+                </div>
+                <div class="d-flex mb-4">
+                    <div class="icon-sm bg-success-light text-success rounded-circle me-3"><i
+                            class="fas fa-envelope"></i></div>
+                    <div>
+                        <h6 class="fw-bold mb-0">Email</h6>
+                        <p class="text-muted mb-0">support@pharmaplus.com</p>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <div class="icon-sm bg-success-light text-success rounded-circle me-3"><i
+                            class="fas fa-map-marker-alt"></i></div>
+                    <div>
+                        <h6 class="fw-bold mb-0">Address</h6>
+                        <p class="text-muted mb-0">PharmaPlus Medical Hub, Main Road, Baramati, Maharashtra - 413102</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7" data-aos="fade-up" data-aos-delay="200">
+            <div class="map-container rounded-4 overflow-hidden shadow-lg h-100" style="min-height: 400px;">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d60565.41804791539!2d74.53696613346917!3d18.1506649230554!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc3a0279664f33d%3A0x296f8c7e0b57e79c!2sBaramati%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1694435738012!5m2!1sen!2sin"
+                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Handle Add to Cart via Data Attributes (fixes lint errors and better real-world practice)
+    document.addEventListener('DOMContentLoaded', function () {
+        document.body.addEventListener('click', function (e) {
+            const btn = e.target.closest('.add-to-cart-btn');
+            if (btn) {
+                const productId = btn.getAttribute('data-product-id');
+                addToCart(productId);
+            }
+        });
+    });
+
+    function addToCart(productId) {
+        fetch(`/products/add_to_cart/${productId}/1`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const countEl = document.getElementById('cart-count');
+                    if (countEl) countEl.innerText = data.cart_count;
+
+                    // Create a premium toast notification
+                    const alert = document.createElement('div');
+                    alert.className = 'alert alert-success position-fixed bottom-0 end-0 m-4 shadow-lg animate__animated animate__fadeInUp';
+                    alert.style.zIndex = '9999';
+                    alert.innerHTML = '<i class="fas fa-check-circle me-2"></i> Added to cart successfully!';
+                    document.body.appendChild(alert);
+                    setTimeout(() => {
+                        alert.classList.replace('animate__fadeInUp', 'animate__fadeOutDown');
+                        setTimeout(() => alert.remove(), 500);
+                    }, 3000);
+                } else {
+                    // Try to trigger login modal if it exists, otherwise redirect
+                    const loginModalEl = document.getElementById('userLoginModal');
+                    if (loginModalEl) {
+                        new bootstrap.Modal(loginModalEl).show();
+                    } else {
+                        window.location.href = "{{ url_for('auth.login') }}";
+                    }
+                }
+            })
+            .catch(err => console.error('Error adding to cart:', err));
+    }
+</script>
+
+<style>
+    .py-6 {
+        padding-top: 5rem;
+        padding-bottom: 5rem;
+    }
+
+    .bg-light-green {
+        background-color: #f7fff7;
+    }
+
+    .bg-success-light {
+        background-color: #e8f5e9;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+    }
+
+    .btn-success:hover {
+        background-color: #1e7e34;
+    }
+
+    .text-success {
+        color: #28a745 !important;
+    }
+
+    .ls-2 {
+        letter-spacing: 2px;
+    }
+
+    .transition {
+        transition: all 0.3s ease;
+    }
+
+    .scale-hover:hover {
+        transform: scale(1.05);
+    }
+
+    .border-dashed {
+        border-style: dashed;
+        border-width: 2px;
+    }
+
+    .hero-slider .carousel-item {
+        height: 600px;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to right, rgba(0, 0, 0, 0.7), transparent);
+    }
+
+    .category-card-new {
+        transition: all 0.3s ease;
+    }
+
+    .category-card-new:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(40, 167, 69, 0.2);
+    }
+
+    .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .icon-sm {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .col-lg-2-4 {
+        flex: 0 0 auto;
+        width: 20%;
+    }
+
+    @media (max-width: 992px) {
+        .col-lg-2-4 {
+            width: 33.33%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .col-lg-2-4 {
+            width: 50%;
+        }
+    }
+</style>
+{% endblock %}

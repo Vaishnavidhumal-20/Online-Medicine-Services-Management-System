@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 p-0 bg-dark min-vh-100 admin-sidebar">
+            <div class="py-4 text-center border-bottom border-secondary mb-4">
+                <h5 class="text-white fw-bold"><i class="fas fa-truck-loading me-2"></i>Partner Panel</h5>
+                <p class="text-white-50 small mb-0">{{ current_user.username }}</p>
+            </div>
+            <nav class="nav flex-column admin-nav">
+                <a class="nav-link" href="{{ url_for('delivery.dashboard') }}"><i class="fas fa-th-large me-2"></i>Dashboard</a>
+                <a class="nav-link active" href="{{ url_for('delivery.assigned_orders') }}"><i class="fas fa-clipboard-list me-2"></i>Assigned Orders</a>
+                <a class="nav-link" href="{{ url_for('delivery.notifications') }}"><i class="fas fa-bell me-2"></i>Notifications</a>
+                <a class="nav-link text-danger mt-5" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 py-5 px-4 bg-light">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <h2 class="fw-bold">Order Details #PH{{ order.id }}</h2>
+                <a href="{{ url_for('delivery.assigned_orders') }}" class="btn btn-outline-secondary rounded-pill">
+                    <i class="fas fa-arrow-left me-2"></i>Back to List
+                </a>
+            </div>
+
+            <div class="row g-4">
+                <!-- Order Status & Actions -->
+                <div class="col-md-8">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                        <h5 class="fw-bold mb-4">Update Delivery Progress</h5>
+                        
+                        <div class="delivery-timeline mb-5">
+                            <div class="timeline-track"></div>
+                            <div class="d-flex justify-content-between">
+                                <div class="timeline-step {% if order.status in ['Order Confirmed', 'Packed', 'Out for Delivery', 'Reached Nearby Location', 'Delivered'] %}active{% endif %}">
+                                    <div class="step-icon"><i class="fas fa-check"></i></div>
+                                    <span class="step-label">Confirmed</span>
+                                </div>
+                                <div class="timeline-step {% if order.status in ['Packed', 'Out for Delivery', 'Reached Nearby Location', 'Delivered'] %}active{% endif %}">
+                                    <div class="step-icon"><i class="fas fa-box"></i></div>
+                                    <span class="step-label">Packed</span>
+                                </div>
+                                <div class="timeline-step {% if order.status in ['Out for Delivery', 'Reached Nearby Location', 'Delivered'] %}active{% endif %}">
+                                    <div class="step-icon"><i class="fas fa-truck"></i></div>
+                                    <span class="step-label">On Way</span>
+                                </div>
+                                <div class="timeline-step {% if order.status in ['Reached Nearby Location', 'Delivered'] %}active{% endif %}">
+                                    <div class="step-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                    <span class="step-label">Arrived</span>
+                                </div>
+                                <div class="timeline-step {% if order.status == 'Delivered' %}active{% endif %}">
+                                    <div class="step-icon"><i class="fas fa-home"></i></div>
+                                    <span class="step-label">Delivered</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if order.status != 'Delivered' and order.status != 'Cancelled' %}
+                        <form action="{{ url_for('delivery.update_status', order_id=order.id) }}" method="POST" class="mt-4">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Update Next Status</label>
+                                    <select name="status" class="form-select bg-light border-0 py-3" required id="statusSelect" onchange="toggleOtpField()">
+                                        <option value="">Select status...</option>
+                                        <option value="Packed" {% if order.status == 'Order Confirmed' %}selected{% endif %}>Packed</option>
+                                        <option value="Out for Delivery" {% if order.status == 'Packed' %}selected{% endif %}>Out for Delivery</option>
+                                        <option value="Reached Nearby Location" {% if order.status == 'Out for Delivery' %}selected{% endif %}>Reached Nearby Location</option>
+                                        <option value="Delivered" {% if order.status == 'Reached Nearby Location' %}selected{% endif %}>Delivered</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6" id="otpField" style="display: none;">
+                                    <label class="form-label fw-bold">Enter Delivery OTP</label>
+                                    <input type="text" name="otp" class="form-control bg-light border-0 py-3" placeholder="4-digit OTP" maxlength="4">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Current Location</label>
+                                    <input type="text" name="current_location" class="form-control bg-light border-0 py-3" 
+                                           value="{{ order.current_location or '' }}" placeholder="e.g. Near Market Yard">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Estimated Delivery</label>
+                                    <input type="text" name="estimated_delivery" class="form-control bg-light border-0 py-3" 
+                                           value="{{ order.estimated_delivery_time or '' }}" placeholder="e.g. today 2 PM">
+                                </div>
+                                <div class="col-12 mt-4">
+                                    <button type="submit" class="btn btn-primary w-100 py-3 rounded-3 shadow-sm fw-bold">Update Tracking & Status</button>
+                                </div>
+                            </div>
+                        </form>
+                        {% else %}
+                        <div class="alert alert-success border-0 rounded-4 p-4 mt-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check-circle fs-3 me-3"></i>
+                                <div>
+                                    <h6 class="fw-bold mb-0">Order Completed</h6>
+                                    <p class="small mb-0">This order has been successfully delivered.</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="card border-0 shadow-sm rounded-4 p-4">
+                        <h5 class="fw-bold mb-4">Product List</h5>
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Qty</th>
+                                        <th>Price</th>
+                                        <th>Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in order.items %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="{{ item.product.image_url }}" alt="" class="rounded-3 me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                                <span class="fw-bold">{{ item.product.name }}</span>
+                                            </div>
+                                        </td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>₹{{ item.price_at_time }}</td>
+                                        <td>₹{{ item.quantity * item.price_at_time }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot class="border-top">
+                                    <tr>
+                                        <td colspan="3" class="text-end fw-bold py-3">Total Amount:</td>
+                                        <td class="fw-bold fs-5 text-primary py-3">₹{{ order.total_amount }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Info -->
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                        <h5 class="fw-bold mb-4 text-primary">Customer Details</h5>
+                        <div class="mb-4">
+                            <label class="text-secondary small d-block">Customer Name</label>
+                            <span class="fw-bold fs-5">{{ order.user.username }}</span>
+                        </div>
+                        <div class="mb-4">
+                            <label class="text-secondary small d-block">Phone Number</label>
+                            <span class="fw-bold fs-5">{{ order.user.phone_number }}</span>
+                            <a href="tel:{{ order.user.phone_number }}" class="btn btn-sm btn-success rounded-pill ms-2"><i class="fas fa-phone"></i></a>
+                        </div>
+                        <div class="mb-4">
+                            <label class="text-secondary small d-block">Delivery Address</label>
+                            {% if order.address %}
+                            <p class="mb-2 fw-500">
+                                <strong>{{ order.address.full_name }}</strong><br>
+                                {{ order.address.address_line }}<br>
+                                {{ order.address.city }}, {{ order.address.state }} - {{ order.address.zip_code }}
+                            </p>
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ (order.address.address_line + ' ' + order.address.city + ' ' + order.address.state) | urlencode }}" 
+                               target="_blank" class="btn btn-sm btn-primary rounded-pill">
+                                <i class="fas fa-map-marked-alt me-1"></i> Open in Maps
+                            </a>
+                            {% else %}
+                            <p class="mb-0 text-muted small">No address associated with this order.</p>
+                            {% endif %}
+                        </div>
+                        <div class="mb-0">
+                            <label class="text-secondary small d-block">Payment Method</label>
+                            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill fw-bold">
+                                {{ order.payment_method }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-primary text-white">
+                        <h5 class="fw-bold mb-3">Location Guidance</h5>
+                        <p class="small opacity-75 mb-4">Simulated GPS Tracking active. Current location updates are visible to the customer.</p>
+                        <div class="p-3 bg-white bg-opacity-10 rounded-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 animate-pulse">
+                                    <div class="pulse-circle"></div>
+                                </div>
+                                <div class="ms-3">
+                                    <p class="small mb-0 opacity-75">Current Location</p>
+                                    <p class="fw-bold mb-0">{{ order.current_location or 'Pending Update' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-sidebar { background: #111827 !important; }
+    .admin-nav .nav-link {
+        color: #94a3b8; padding: 15px 25px; border-left: 4px solid transparent; font-weight: 500; transition: all 0.3s;
+    }
+    .admin-nav .nav-link:hover, .admin-nav .nav-link.active {
+        background: rgba(40, 167, 69, 0.1); color: #28a745; border-left-color: #28a745;
+    }
+
+    .delivery-timeline { position: relative; padding: 0 10px; }
+    .timeline-track {
+        position: absolute; top: 20px; left: 0; right: 0; height: 3px; background: #e9ecef; z-index: 1;
+    }
+    .timeline-step {
+        position: relative; z-index: 2; text-align: center; width: 60px;
+    }
+    .step-icon {
+        width: 40px; height: 40px; border-radius: 50%; background: #fff; border: 2px solid #e9ecef; color: #94a3b8;
+        display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; transition: all 0.3s;
+    }
+    .timeline-step.active .step-icon {
+        background: #28a745; border-color: #28a745; color: #fff;
+    }
+    .step-label { font-size: 11px; font-weight: 600; color: #64748b; }
+    .timeline-step.active .step-label { color: #28a745; }
+
+    .pulse-circle {
+        width: 15px; height: 15px; background: #fff; border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+    }
+</style>
+
+<script>
+    function toggleOtpField() {
+        const select = document.getElementById('statusSelect');
+        const otpField = document.getElementById('otpField');
+        if (select.value === 'Delivered') {
+            otpField.style.display = 'block';
+            otpField.querySelector('input').required = true;
+        } else {
+            otpField.style.display = 'none';
+            otpField.querySelector('input').required = false;
+        }
+    }
+    // Initialize on load
+    window.onload = toggleOtpField;
+</script>
+{% endblock %}

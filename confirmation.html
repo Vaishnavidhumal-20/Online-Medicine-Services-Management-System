@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-7 py-5">
+            <div class="glass-card p-5 shadow-sm border-0 rounded-4 animate__animated animate__fadeInUp">
+                <div class="avatar-bg mx-auto mb-4 bg-success text-white rounded-circle d-flex align-items-center justify-content-center"
+                    style="width: 100px; height: 100px;">
+                    <i class="fas fa-check fs-1"></i>
+                </div>
+                <h1 class="fw-bold mb-3 text-success">Order Confirmed!</h1>
+                <h4 class="fw-medium mb-4">Thank you, {{ current_user.username }}!</h4>
+                <p class="text-secondary mb-5">Your order <strong>#PH{{ order.id }}</strong> has been placed
+                    successfully. You will receive an invoice and tracking details on your registered mobile/email.</p>
+
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="{{ url_for('user.track_order', order_id=order.id) }}"
+                        class="btn btn-success btn-lg rounded-pill px-4 fw-bold shadow-sm">Track Order</a>
+                    <a href="{{ url_for('main.index') }}"
+                        class="btn btn-outline-success btn-lg rounded-pill px-4 fw-bold shadow-sm">Continue Shopping</a>
+                    {% if order.status in ['Pending', 'Confirmed'] %}
+                    <a href="{{ url_for('user.cancel_order', order_id=order.id) }}"
+                        class="btn btn-danger btn-lg rounded-pill px-4 fw-bold shadow-sm"
+                        onclick="return confirm('Are you sure you want to cancel this order?')">Cancel Order</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
